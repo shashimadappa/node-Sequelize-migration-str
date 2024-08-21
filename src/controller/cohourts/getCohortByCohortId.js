@@ -8,11 +8,11 @@ async function getCohortsById(req, res) {
         if (schedule) {
             res.status(200).json(schedule);
         } else {
-            res.status(404).json({ error: 'Schedule not found.' });
+            res.status(404).json({ error: 'Error fetching cohorts.' });
         }
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'An error occurred while retrieving the schedule.' });
     }
 }
-module.exports = getCohortsById
+module.exports = getCohortsById;
