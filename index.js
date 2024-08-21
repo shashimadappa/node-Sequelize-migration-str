@@ -18,3 +18,12 @@ app.use('/', routes);
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT} in ${ENV} mode`);
 });
+
+
+// "development": {
+//   "username": "postgres",
+//   "password": "1234",
+//   "database": "lit_school",
+//   "host": "127.0.0.1",
+//   "dialect": "postgres"
+// },
