@@ -41,7 +41,6 @@ const inputArray = [
 ];
 
 
-
 // Helper function to format dates
 function formatDate(date) {
   const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
@@ -75,7 +74,7 @@ function isFormatDay(date, format) {
 }
 
 // Function to process the input array and generate the output
-function processSchedules(inputArray, startDate, holidays, format) {
+function processSchedules(inputArray, startDate, holidays, format, sessionsPerDay) {
   let currentDate = new Date(startDate);
   holidays = holidays.map(date => date.replace(/\//g, '-')); // Ensure holidays format is MM-DD-YYYY
   currentDate = skipNonWorkingDays(currentDate, holidays); // Skip any Sundays or holidays in the start date
@@ -92,11 +91,12 @@ function processSchedules(inputArray, startDate, holidays, format) {
         }
       }
 
-      const sessionHours = Math.min(hours, 2); // Assign maximum of 2 hours per day
+      const sessionHours = Math.min(hours, sessionsPerDay); // Assign hours based on sessionsPerDay input
       assignedDates.push({ 
         date: formatDate(currentDate),
         day: currentDate.toLocaleDateString(undefined, { weekday: 'long' }),
-        sessionType: sessionType 
+        sessionType: sessionType,
+        hours: sessionHours
       });
       hours -= sessionHours;
       currentDate = addDays(currentDate, 1);
@@ -113,12 +113,12 @@ function processSchedules(inputArray, startDate, holidays, format) {
     // Assign Lecture and Innovate hours alternately
     while (lectureHours > 0 || innovateHours > 0) {
       if (lectureHours > 0) {
-        assignHours('Lecture', Math.min(lectureHours, 2), assignedDates);
-        lectureHours -= 2;
+        assignHours('Lecture', Math.min(lectureHours, sessionsPerDay), assignedDates);
+        lectureHours -= sessionsPerDay;
       }
       if (innovateHours > 0) {
-        assignHours('Innovate', Math.min(innovateHours, 2), assignedDates);
-        innovateHours -= 2;
+        assignHours('Innovate', Math.min(innovateHours, sessionsPerDay), assignedDates);
+        innovateHours -= sessionsPerDay;
       }
     }
 
@@ -144,43 +144,45 @@ function processSchedules(inputArray, startDate, holidays, format) {
 }
 
 
+
 async function createCohourt(req, res) {
-    const { name, startdate, format, holidays, sessions_per_day } = req.body;
+    // const { name, startdate, format, holidays, sessions_per_day } = req.body;
 
-    // Example usage
-// const startDate = '2024-08-13'; // Set your start date here
-// const holidays = ['08/15/2024', '08/16/2024']; // List of holidays in MM/DD/YYYY format
-// const format = 'TTS'; // 'MWF' for Monday, Wednesday, Friday or 'TTS' for Tuesday, Thursday, Saturday
-// const result = processSchedules(inputArray, startDate, holidays, format);
+// Example usage
+const startDate = '2024-08-22'; // Set your start date here
+const holidays = ['08/24/2024', '08/26/2024']; // List of holidays in MM/DD/YYYY format
+const format = 'MWF'; // Scheduling format
+const sessionsPerDay = 2; // Set the sessionsPerDay (2, 4, or 6)
+const result = processSchedules(inputArray, startDate, holidays, format, sessionsPerDay);
 
-    try {
-      if (holidays && typeof holidays !== 'object') {
-        return res.status(400).json({ message: 'Invalid format for holidays. It should be a JSON object.' });
-      }
+    // try {
+    //   if (holidays && typeof holidays !== 'object') {
+    //     return res.status(400).json({ message: 'Invalid format for holidays. It should be a JSON object.' });
+    //   }
 
-      // const result = processSchedules(inputArray, startDate, holidays, format);
+    //   // const result = processSchedules(inputArray, startDate, holidays, format);
 
-      // Create the cohort
-      const newCohort = await cohorts.create({
-        name,
-        startdate,
-        format,
-        holidays, // Store the holidays as JSONB
-        sessions_per_day,
-      });
+    //   // Create the cohort
+    //   const newCohort = await cohorts.create({
+    //     name,
+    //     startdate,
+    //     format,
+    //     holidays, // Store the holidays as JSONB
+    //     sessions_per_day,
+    //   });
 
     res.status(201).json({
       message: 'Cohort created successfully',
       data: result,
     });
   
-    } catch (error) {
-      console.error('Error creating cohort:', error);
-      res.status(500).json({
-        message: 'Error creating cohort',
-        error: error.message,
-      });
-    }
+    // } catch (error) {
+    //   console.error('Error creating cohort:', error);
+    //   res.status(500).json({
+    //     message: 'Error creating cohort',
+    //     error: error.message,
+    //   });
+    // }
 }
 
 module.exports = createCohourt

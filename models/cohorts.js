@@ -26,15 +26,19 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
+      sessions_time: {
+        type: DataTypes.JSONB,
+        allowNull: true,
+      },
       created_at: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: new Date(),
+        defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
       },
       updated_at: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: new Date(),
+        defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
       },
     }, {
       underscored: true,
