@@ -42,6 +42,14 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.JSONB,
             allowNull: false,
           },
+          first_date: {
+            type: Sequelize.STRING,
+            allowNull: false,
+          },
+          first_day: {
+            type: Sequelize.STRING,
+            allowNull: false,
+          },
           created_at: {
             type: Sequelize.DATE,
             allowNull: false,

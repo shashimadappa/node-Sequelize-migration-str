@@ -137,8 +137,13 @@ async function createCohortCalendar(req, res) {
 
     const result = processSchedules(inputArray, convertedDate, holidays, format, sessionsPerDay);
     // console.log(result)
-     // Store each event in the cohort_events table
-     for (const event of result) {
+    // Store each event in the cohort_events table
+    for (const event of result) {
+      const firstAssignedDate = event.assignedDates[0];
+      const firstDate = firstAssignedDate.date;
+      const firstDay = firstAssignedDate.day;
+      event.firstDate = firstDate;
+      event.firstDay = firstDay;
       await cohortEvents.create({
         cohort_id: cohortId,
         epic: event.Epic,
@@ -148,6 +153,8 @@ async function createCohortCalendar(req, res) {
         judging_hours: event.JudgingHours,
         order: event.Order,
         type: event.Type,
+        first_date: firstDate,
+        first_day: firstDay,
         assigned_date: event.assignedDates, // Store the assigned dates as JSONB
       });
     }
